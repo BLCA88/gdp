@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+
+</head>
+
+<body>
+    <main>
+        <div class="container">
+            <table id="tabla" class="table table-dark table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col" class="col-1">#</th>
+                        <th scope="col" class="col-8">Items</th>
+                        <th scope="col" class="col">Cant</th>
+                        <th scope="col" class="col-1">P.U</th>
+                        <th scope="col" class="col-1">Sub</th>
+                        <th scope="col" class="col-1"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <div class="cont_tbody">
+                        <tr id="tr">
+                            <th scope="row">1</th>
+                            <td></td>
+                            <td><input type="number" class="inputNumber" name="" id="" min="1" value="1"></td>
+                            <td></td>
+                            <td></td>
+                            <td><button type="button" class="btn btn-danger">X</button></td>
+                        </tr>
+                    </div>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4"></td>
+                        <td class="text-end">IVA</td>
+                        <td colspan="2">
+                            <select class="form-control">
+                                <option value="10.5">10,5%</option>
+                                <option value="21">21%</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4"></td>
+                        <td class="text-end">DESC</td>
+                        <td colspan="2">
+                            <select class="form-control">
+                                <option value=""></option>
+                                <option value="10">10%</option>
+                                <option value="15">15%</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4"></td>
+                        <td class="text-end">TOTAL</td>
+                        <td colspan="2">$230000</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="container">
+            <input type="file" name="" id="fileInput">
+            <div class="container" id="SelectContainer"></div>
+            <div class="container" id="TableContainer">
+
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
+    <script type="module" src="./main.js"></script>
+</body>
+
+</html>
