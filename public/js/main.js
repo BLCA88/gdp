@@ -21,7 +21,7 @@ fileInput.addEventListener('change', async (event) => {
         selectSheet.classList.add("form-select");
         selectSheet.setAttribute("aria-label", "Default select example");
         selectFilter.classList.add("form-select");
-        selectFilter.setAttribute("arial-label", "Filter components");
+        selectFilter.setAttribute("aria-label", "Filter components");
 
         let optionsSheet = `<option value="" selected>Selecciona una hoja</option>`;
 
