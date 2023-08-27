@@ -1,12 +1,11 @@
 import XLSX from 'https://cdn.sheetjs.com/xlsx-0.20.0/package/xlsx.mjs';
 
-//Agrega la informacion de un archivo excel utilizando la hoja seleccionada
+//Agrega la informacion de un archivo excel.
 const fileInput = document.getElementById('fileInput');
 fileInput.addEventListener('change', async (event) => {
     const file = event.target.files[0];
     const fileName = file.name;
     const fileExtension = fileName.slice((fileName.lastIndexOf(".")));
-    console.log(fileExtension)
 
     const compatibleExtensions = [".xlsx", ".xls", ".ods"]; // Lista de extensiones compatibles
 
@@ -17,26 +16,28 @@ fileInput.addEventListener('change', async (event) => {
         const wsnames = wb.SheetNames;// Array con los nombres de las hojas.;
 
         const selectContainer = document.getElementById("SelectContainer");
-        const selectElement = document.createElement("select");
-        selectElement.classList.add("form-select");
-        selectElement.setAttribute("aria-label", "Default select example");
+        const selectSheet = document.createElement("select");
+        const selectFilter = document.createElement("select");
+        selectSheet.classList.add("form-select");
+        selectSheet.setAttribute("aria-label", "Default select example");
+        selectFilter.classList.add("form-select");
+        selectFilter.setAttribute("arial-label", "Filter components");
 
-        const defaultOption = document.createElement("option");
-        defaultOption.selected = true;
-        defaultOption.textContent = "Elige una hoja";
-        selectElement.appendChild(defaultOption);
+        let optionsSheet = `<option value="" selected>Selecciona una hoja</option>`;
 
-        for (let i = 0; i < wsnames.length; i++) {
-            const option = document.createElement("option");
-            option.value = i; // Se agrega el value en la etiqueta para luego poder agregar segun la seleccion que hoja se quiere ver.
-            option.textContent = wsnames[i]; // Usa el valor del array
-            selectElement.appendChild(option);
-        }
+        for (let i = 0; i < wsnames.length - 1; i++) {
+            optionsSheet += `<option value="${i}">${wsnames[i]}</option>`;
+        };
 
-        selectContainer.appendChild(selectElement); // Agrega el select al contenedor deseado
+        selectSheet.innerHTML = optionsSheet;
 
-        selectElement.addEventListener("change", () => {
-            const selectValue = selectElement.value;
+        // Agrega el select al contenedor.
+        if (!selectContainer.contains(selectSheet)) {
+            selectContainer.appendChild(selectSheet)
+        };
+
+        selectSheet.addEventListener("change", () => {
+            const selectValue = selectSheet.value;
             const wsname = wb.SheetNames[selectValue];
             const ws = wb.Sheets[wsname];
             const tableContainer = document.getElementById("TableContainer");
@@ -44,7 +45,25 @@ fileInput.addEventListener('change', async (event) => {
             const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
             const headers = rows[3].slice(2, 7); // Se elijen los elementos para el encabezado de la tabla en este caso empieza en la fila 4 (del archivo excel).
 
-            const tableHTML = `
+            // 
+
+            const mergesRows = ws['!merges'].sort((a, b) => a.s.r - b.s.r).slice(1).filter((merge, index, self) => index === self.map(item => item.s.r).indexOf(merge.s.r));
+            const mergesNames = rows.slice(4).filter(row => row.length === 4).map(row => [row.filter(cell => cell !== "").join("/")]);
+
+            let optionsFilter = `<option value="" selected>Sin filtro</option>`;
+
+            for (let i = 0; i < mergesRows.length - 1; i++) {
+                optionsFilter += `<option value="${mergesRows[i].s.r}">${mergesNames[i]}</option>`;
+            }
+
+            selectFilter.innerHTML = optionsFilter;
+
+            if (!selectContainer.contains(selectFilter)) {
+                selectContainer.appendChild(selectFilter);
+            }
+
+
+            const tableFull = `
                 <table class="table table-dark table-hover">
                     <thead>
                         <tr>
@@ -68,7 +87,45 @@ fileInput.addEventListener('change', async (event) => {
                 </table>
             `;
 
-            tableContainer.innerHTML = tableHTML;
+            tableContainer.innerHTML = tableFull;
+
+            selectFilter.addEventListener("change", (event) => {
+                const selectedIndex = selectFilter.selectedIndex;
+
+                if (selectFilter.options[selectedIndex].value == 0) {
+                    tableContainer.innerHTML = tableFull;
+                } else {
+                    const rowValue = selectFilter.options[selectedIndex].value;
+                    const nextRowValue = selectFilter.options[selectedIndex + 1].value;
+                    const rowsRange = rows.slice(Number(rowValue) + 1, nextRowValue);
+
+                    const tableFilter = `
+                        <table class="table table-dark table-hover">
+                        <thead>
+                            <tr>
+                                ${headers.map(header => `<th scope="col">${header}</th>`).join("")}
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows.slice(Number(rowValue) + 1, nextRowValue)
+                            .map(row => row.slice(2, 7))// Aca se elijen los elementos del array que se van a mostrar en cada fila. Desde el elemento 2 hasta el elemento 7.
+                            .map(element => `
+                                    <tr>
+                                        ${element.map(cell => `<td>${cell}</td>`).join("")}
+                                        <td><button type="button" class="btn btn-outline-danger" id="addbtn" >Agregar</button>
+                                        </td>
+                                    </tr>
+                                `)
+                            .join("")}
+                                </tbody>
+                        </table>
+                    `;
+
+                    tableContainer.innerHTML = tableFilter;
+                }
+
+            });
         });
     } else {
         // La extensión no es compatible con la librería SheetJS
